@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>PhotoGrab — by Adolfotography</title>
+<meta name="theme-color" content="#5b2ea6">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PhotoGrab">
+<style>
+  :root{
+    --purple:#5b2ea6;
+    --purple2:#8a5cf5;
+    --purple3:#3d1d72;
+    --gold:#f5b642;
+    --deep:#0e0f13;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--deep);overflow:hidden}
+  #appFrame{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--deep)}
+
+  /* ---------- splash ---------- */
+  #splash{
+    position:fixed;inset:0;z-index:10;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:24px;
+    background:radial-gradient(circle at 50% 40%, #1c1030 0%, #0e0f13 70%);
+    transition:opacity .5s ease, visibility .5s ease;
+  }
+  #splash.hide{opacity:0;visibility:hidden}
+
+  .logo-wrap{
+    position:relative;width:200px;height:200px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .logo-wrap img{
+    width:136px;height:136px;border-radius:28px;
+    box-shadow:0 0 36px rgba(138,92,245,.5);
+    position:relative;z-index:2;
+    object-fit:cover;
+  }
+
+  /* spinning rings — purple palette with a gold accent */
+  .ring{position:absolute;border-radius:50%;border:2.5px solid transparent;}
+  .r1{
+    width:200px;height:200px;
+    border-top-color:var(--purple2);border-right-color:var(--purple2);
+    animation:spin 1.6s linear infinite;
+    filter:drop-shadow(0 0 8px rgba(138,92,245,.75));
+  }
+  .r2{
+    width:160px;height:160px;
+    border-bottom-color:var(--gold);border-left-color:var(--gold);
+    animation:spin 2.2s linear infinite reverse;
+    filter:drop-shadow(0 0 6px rgba(245,182,66,.6));
+  }
+  .r3{
+    width:118px;height:118px;
+    border-top-color:var(--purple3);border-left-color:var(--purple3);
+    animation:spin 1.1s linear infinite;
+    filter:drop-shadow(0 0 4px rgba(61,29,114,.8));
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .brand{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:#ffffff;font-weight:700;font-size:22px;letter-spacing:1px;
+    text-shadow:0 0 20px rgba(138,92,245,.4);
+    text-align:center;
+  }
+  .brand span{color:var(--purple2)}
+  .tagline{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:#6b6b6b;font-size:11.5px;letter-spacing:3px;
+    text-transform:uppercase;margin-top:-14px;
+  }
+
+  .retry{margin-top:6px;display:none;font-family:-apple-system,sans-serif}
+  .retry a{color:var(--purple2);font-size:13px;text-decoration:underline;cursor:pointer}
+
+  /* ---------- install banner ---------- */
+  #installBanner{
+    position:fixed;left:12px;right:12px;bottom:14px;z-index:20;
+    display:none;align-items:center;gap:14px;
+    background:#171923;border:1px solid #2c3042;border-radius:16px;
+    padding:14px 16px;
+    box-shadow:0 12px 32px rgba(0,0,0,.55);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    animation:rise .4s ease;
+  }
+  @keyframes rise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+  #installBanner img{width:46px;height:46px;border-radius:12px;flex-shrink:0}
+  #installBanner .txt{flex:1;min-width:0}
+  #installBanner .txt b{color:#fff;font-size:15px;display:block}
+  #installBanner .txt small{color:#9aa0b4;font-size:12.5px;line-height:1.45;display:block;margin-top:2px}
+  #installBtn{
+    background:var(--purple2);color:#fff;border:none;cursor:pointer;
+    padding:10px 18px;border-radius:12px;font-weight:700;font-size:14px;flex-shrink:0;
+  }
+  #dismissBtn{
+    background:none;border:none;color:#6b6b6b;font-size:20px;cursor:pointer;
+    padding:4px 8px;flex-shrink:0;line-height:1;
+  }
+</style>
+</head>
+<body>
+  <iframe
+    id="appFrame"
+    title="PhotoGrab"
+    allow="camera; clipboard-write; clipboard-read">
+  </iframe>
+
+  <div id="splash">
+    <div class="logo-wrap">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+      <img src="icon-192.png" alt="PhotoGrab Logo">
+    </div>
+    <div class="brand">Photo<span>Grab</span></div>
+    <div class="tagline">by Adolfotography</div>
+    <div class="retry" id="retry">
+      <a id="retryLink">Taking too long? Tap to retry</a>
+    </div>
+  </div>
+
+  <!-- Install banner (Android/desktop: native prompt; iOS: instructions) -->
+  <div id="installBanner">
+    <img src="icon-192.png" alt="">
+    <div class="txt">
+      <b>Install PhotoGrab</b>
+      <small id="installHint">Add to your home screen for the full-screen app experience.</small>
+    </div>
+    <button id="installBtn">Install</button>
+    <button id="dismissBtn" aria-label="Dismiss">&times;</button>
+  </div>
+
+<script>
+  // ---- Hardcoded Apps Script web app URL ----
+  var APP_URL = 'https://script.google.com/macros/s/AKfycbytX1_1cSGbBgjErRbL9b3R5eBQ7T4pcTsIAndib8WSek8TvzvtBSBgbEDm32GWswM/exec';
+
+  var frame  = document.getElementById('appFrame');
+  var splash = document.getElementById('splash');
+  var retry  = document.getElementById('retry');
+  var hidden = false;
+
+  function hideSplash(){ if(hidden) return; hidden = true; splash.classList.add('hide'); }
+
+  frame.addEventListener('load', function(){ setTimeout(hideSplash, 350); });
+
+  setTimeout(function(){ if(!hidden) retry.style.display = 'block'; }, 15000);
+  document.getElementById('retryLink').addEventListener('click', function(){
+    retry.style.display = 'none';
+    frame.src = APP_URL + (APP_URL.indexOf('?') < 0 ? '?' : '&') + 'r=' + Date.now();
+  });
+
+  frame.src = APP_URL;
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
+
+  /* ---------- Install banner logic ---------- */
+  var banner     = document.getElementById('installBanner');
+  var installBtn = document.getElementById('installBtn');
+  var dismissBtn = document.getElementById('dismissBtn');
+  var installHint = document.getElementById('installHint');
+  var deferredPrompt = null;
+
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                     window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var dismissed = false;
+  try { dismissed = localStorage.getItem('pgInstallDismissed') === '1'; } catch(e){}
+
+  function showBanner(){ if(!isStandalone && !dismissed) banner.style.display = 'flex'; }
+  function hideBanner(){ banner.style.display = 'none'; }
+
+  // Android / desktop Chrome: capture the native prompt and offer our banner
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(showBanner, 2500);   // let the splash finish first
+  });
+
+  // iOS Safari has no install prompt — show step-by-step instructions instead
+  if (isIOS && !isStandalone && !dismissed) {
+    installHint.innerHTML = 'Tap the <b>Share</b> button ' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8a5cf5" stroke-width="2" style="vertical-align:-2px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>' +
+      ' then <b>"Add to Home Screen"</b>.';
+    installBtn.style.display = 'none';
+    setTimeout(showBanner, 2500);
+  }
+
+  installBtn.addEventListener('click', function(){
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choice){
+      if (choice.outcome === 'accepted') hideBanner();
+      deferredPrompt = null;
+    });
+  });
+
+  dismissBtn.addEventListener('click', function(){
+    hideBanner();
+    try { localStorage.setItem('pgInstallDismissed', '1'); } catch(e){}
+  });
+
+  window.addEventListener('appinstalled', function(){
+    hideBanner();
+    try { localStorage.setItem('pgInstallDismissed', '1'); } catch(e){}
+  });
+</script>
+</body>
+</html>
