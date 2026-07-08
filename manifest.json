@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0e0f13",
-  "theme_color": "#5b2ea6",
+  "theme_color": "#f5b642",
   "categories": ["photo", "shopping"],
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

@@ -1,5 +1,5 @@
 // PhotoGrab by Adolfotography (c) 2026 - Service Worker
-const CACHE_NAME = 'photograb-v1';
+const CACHE_NAME = 'photograb-v3';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', function(event) {
